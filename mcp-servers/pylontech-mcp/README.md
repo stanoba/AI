@@ -191,7 +191,32 @@ File path: `C:\Users\<user>\.gemini\config\mcp_config.json`
 
 ---
 
-## 8. Disclaimer & Limitation of Liability
+## 8. Example AI Agent Prompts
+
+You can use standard natural language to prompt your AI agent to query the battery stack. Here are some examples:
+
+* **Get individual cell states**:
+  > *"Get bat info about module 2 using the Pylontech MCP server."*
+  > (The agent will translate this and call `raw_command("bat 2")`)
+* **Get stack status**:
+  > *"Show me the live power status of the battery stack."*
+  > (The agent will call `get_pwr_status()`)
+* **Retrieve specific cell log timelines**:
+  > *"Check the history of cell voltages for battery module 2 from the logs."*
+  > (The agent will call `raw_command("datalist history bat 2 volt 1")`)
+* **Perform module diagnostics**:
+  > *"Run diagnostics on battery module 1."*
+  > (The agent will call `get_module_diagnostics(module_id=1)`)
+* **Check BMS log history**:
+  > *"Check the last 10 BMS log events."*
+  > (The agent will call `raw_command("log 10")`)
+* **Examine history index details**:
+  > *"Load history index 1790 cell telemetry details."*
+  > (The agent will call `raw_command("data history 1790")`)
+
+---
+
+## 9. Disclaimer & Limitation of Liability
 
 > [!CAUTION]
 > **USE AT YOUR OWN RISK.** This software is provided "as is" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
