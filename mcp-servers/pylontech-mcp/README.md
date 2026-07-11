@@ -26,58 +26,14 @@ Make sure Python 3.9+ is installed on your system.
 pip install mcp pyserial
 ```
 
-### Running the Server
+### Setup Guide
+To use the MCP server, you do not need to run any terminal commands manually. You only need to configure the connection details and the server file path inside your AI Agent's configuration file (see **[Section 7: AI Agent Configuration Examples](#7-ai-agent-configuration-examples)** below). 
 
-Start the server using standard input/output (stdio) communication channel:
-
-```bash
-python pylontech_mcp.py
-```
+When you launch your AI Agent client (such as Claude Desktop or Google Antigravity), it will automatically start the Pylontech MCP server in the background and interface with your battery stack.
 
 ---
 
-## 3. Configuration
-
-Configure the connection settings via **environment variables** before launching:
-
-| Environment Variable | Default Value | Description |
-|:---|:---|:---|
-| `PYLONTECH_CONN_TYPE` | `network` | Connection medium: `network` (TCP/Telnet) or `serial` (COM port) |
-| `PYLONTECH_PORT_OR_HOST` | `192.168.1.5` | The IP Address (for network) or the COM port name (e.g., `COM3` on Windows, `/dev/ttyUSB0` on Linux/macOS) |
-| `PYLONTECH_BAUD_OR_PORT` | `23` | The network port (typically `23` for Telnet) or the serial baud rate (typically `115200` for Pylontech console) |
-
-### Configuration Examples
-
-#### Example: Network (Telnet bridge)
-```bash
-# Linux/macOS
-export PYLONTECH_CONN_TYPE="network"
-export PYLONTECH_PORT_OR_HOST="192.168.1.5"
-export PYLONTECH_BAUD_OR_PORT="23"
-python pylontech_mcp.py
-
-# Windows (PowerShell)
-$env:PYLONTECH_CONN_TYPE="network"
-$env:PYLONTECH_PORT_OR_HOST="192.168.1.5"
-$env:PYLONTECH_BAUD_OR_PORT="23"
-python pylontech_mcp.py
-```
-
-> [!TIP]
-> **Wi-Fi Serial Bridge**: An excellent way to connect your battery stack over Wi-Fi is to use an ESP8266 board flashed with the open-source **[esp-link](https://github.com/jeelabs/esp-link)** firmware. Connecting the ESP8266 Rx/Tx pins (via an RS232 shifter) to the battery console allows `esp-link` to expose a transparent raw serial TCP port (typically on port `23` or `2323`), which this MCP server can connect to over the local network.
-
-#### Example: Direct USB Console Cable (Serial)
-```bash
-# Windows
-$env:PYLONTECH_CONN_TYPE="serial"
-$env:PYLONTECH_PORT_OR_HOST="COM3"
-$env:PYLONTECH_BAUD_OR_PORT="115200"
-python pylontech_mcp.py
-```
-
----
-
-## 4. DIY RJ45 Console Communication Cable Guide
+## 3. DIY RJ45 Console Communication Cable Guide
 
 The console port on Pylontech battery stacks (e.g. US2000C, US3000C, US5000C) uses an RJ45 socket operating at **RS232 voltage levels** (not TTL). If you want to connect a PC directly to the battery console using a standard USB-to-RS232 serial cable (with DB9 connector or wire ends), you can build a custom cable using a standard Ethernet patch cord.
 
@@ -107,7 +63,7 @@ The console port on Pylontech battery stacks (e.g. US2000C, US3000C, US5000C) us
 
 ---
 
-## 5. MCP Tools Provided
+## 4. MCP Tools Provided
 
 Once registered with your AI assistant, the server exposes the following tools:
 
@@ -117,7 +73,7 @@ Once registered with your AI assistant, the server exposes the following tools:
 
 ---
 
-## 6. Security & Safety Whitelist & Command Syntax
+## 5. Security & Safety Whitelist & Command Syntax
 
 To prevent accidental stack shutdowns, resets, or configuration modifications, the server blocks all destructive or administrative commands. Only the following safe, read-only query commands are permitted by the `raw_command` tool:
 
@@ -150,7 +106,7 @@ Any other command (e.g. `shut`, `trst`, `updata`, `login`) is rejected before ex
 
 ---
 
-## 7. Features & Reliability
+## 6. Features & Reliability
 
 * **Automatic JSON Serialization**: Telemetry values are parsed into numeric formats. Decorative terminal lines and trailing space paddings are stripped out. Values containing physics units (e.g. `mV`, `mA`, `%`, `mC`, `mAH`, `s`) are converted to standard integers/floats.
 * **Auto-Paging Handler**: The server automatically detects the console paging prompt (`Press [Enter] to be continued,other key to exit`) and sends a carriage return (`\r`) in the background to stitch together multi-page records (crucial for long `datalist` history outputs).
@@ -158,14 +114,27 @@ Any other command (e.g. `shut`, `trst`, `updata`, `login`) is rejected before ex
 
 ---
 
-## 8. AI Agent Configuration Examples
+## 7. AI Agent Configuration Examples
 
-To use this local MCP server with your AI agents, add the following configuration to their respective settings files.
+To connect the MCP server to your battery stack, you must configure connection environment variables within your AI Agent's settings.
 
-### Configuration for OpenAI Codex
+### Configuration Parameters
+
+| Environment Variable | Default Value | Description |
+|:---|:---|:---|
+| `PYLONTECH_CONN_TYPE` | `network` | Connection medium: `network` (TCP/Telnet bridge) or `serial` (COM port) |
+| `PYLONTECH_PORT_OR_HOST` | `192.168.1.5` | The target IP Address (for `network` mode) or the COM port identifier (e.g. `COM3` on Windows, `/dev/ttyUSB0` on Linux/macOS) |
+| `PYLONTECH_BAUD_OR_PORT` | `23` | The network port (typically `23` for Telnet) or the serial communication baud rate (typically `115200` for Pylontech console) |
+
+> [!TIP]
+> **Wi-Fi Serial Bridge**: An excellent way to connect your battery stack over Wi-Fi is to use an ESP8266 board flashed with the open-source **[esp-link](https://github.com/jeelabs/esp-link)** firmware. Connecting the ESP8266 Rx/Tx pins (via an RS232 shifter) to the battery console allows `esp-link` to expose a transparent raw serial TCP port (typically on port `23` or `2323`), which this MCP server can connect to over the local network using `PYLONTECH_CONN_TYPE="network"`.
+
+### Configuration Files Setup
+
+#### Configuration for OpenAI Codex
 File path: `C:\Users\<user>\.codex\config.toml`
 
-#### Option A: Network (TCP/Telnet bridge)
+##### Option A: Network (TCP/Telnet bridge)
 ```toml
 [mcp_servers.pylontech]
 command = "python"
@@ -173,7 +142,7 @@ args = ["D:/Documents/GitHub/AI/mcp-servers/pylontech-mcp/pylontech_mcp.py"]
 env = { PYLONTECH_CONN_TYPE = "network", PYLONTECH_PORT_OR_HOST = "192.168.1.5", PYLONTECH_BAUD_OR_PORT = "23" }
 ```
 
-#### Option B: Direct Serial Cable (e.g. COM3 or /dev/ttyUSB0)
+##### Option B: Direct Serial Cable (COM/USB port)
 ```toml
 [mcp_servers.pylontech]
 command = "python"
@@ -181,10 +150,10 @@ args = ["D:/Documents/GitHub/AI/mcp-servers/pylontech-mcp/pylontech_mcp.py"]
 env = { PYLONTECH_CONN_TYPE = "serial", PYLONTECH_PORT_OR_HOST = "COM3", PYLONTECH_BAUD_OR_PORT = "115200" }
 ```
 
-### Configuration for Google Antigravity
+#### Configuration for Google Antigravity
 File path: `C:\Users\<user>\.gemini\config\mcp_config.json`
 
-#### Option A: Network (TCP/Telnet bridge)
+##### Option A: Network (TCP/Telnet bridge)
 ```json
 {
   "mcpServers": {
@@ -203,7 +172,7 @@ File path: `C:\Users\<user>\.gemini\config\mcp_config.json`
 }
 ```
 
-#### Option B: Direct Serial Cable (e.g. COM3 or /dev/ttyUSB0)
+##### Option B: Direct Serial Cable (COM/USB port)
 ```json
 {
   "mcpServers": {
@@ -224,7 +193,7 @@ File path: `C:\Users\<user>\.gemini\config\mcp_config.json`
 
 ---
 
-## 9. Example AI Agent Prompts
+## 8. Example AI Agent Prompts
 
 You can use standard natural language to prompt your AI agent to query the battery stack. Here are some examples:
 
@@ -246,6 +215,50 @@ You can use standard natural language to prompt your AI agent to query the batte
 * **Examine history index details**:
   > *"Load history index 1790 cell telemetry details."*
   > (The agent will call `raw_command("data history 1790")`)
+
+---
+
+## 9. Local Development & Debugging
+
+If you are developing features, building custom cabling, or troubleshooting hardware connections, you can run and test the server environment manually:
+
+### Manually Setting Variables & Running via Terminal
+If you want to run the python server process directly, define the environment variables in your shell before execution:
+
+#### Option A: Network connection (Telnet bridge)
+```bash
+# Linux/macOS
+export PYLONTECH_CONN_TYPE="network"
+export PYLONTECH_PORT_OR_HOST="192.168.1.5"
+export PYLONTECH_BAUD_OR_PORT="23"
+python pylontech_mcp.py
+
+# Windows (PowerShell)
+$env:PYLONTECH_CONN_TYPE="network"
+$env:PYLONTECH_PORT_OR_HOST="192.168.1.5"
+$env:PYLONTECH_BAUD_OR_PORT="23"
+python pylontech_mcp.py
+```
+
+#### Option B: Direct USB Console Cable (Serial)
+```bash
+# Windows (PowerShell)
+$env:PYLONTECH_CONN_TYPE="serial"
+$env:PYLONTECH_PORT_OR_HOST="COM3"
+$env:PYLONTECH_BAUD_OR_PORT="115200"
+python pylontech_mcp.py
+```
+
+### Browser-based testing (MCP Inspector)
+1. Install the MCP command line interface tools:
+   ```bash
+   pip install mcp[cli]
+   ```
+2. Run the server in developer mode:
+   ```bash
+   mcp dev pylontech_mcp.py
+   ```
+3. This spins up the **MCP Inspector** web interface and opens it in your default browser. You can click on individual tools (such as `get_pwr_status` or `raw_command`), enter test inputs, and see the parsed JSON console outputs live.
 
 ---
 
