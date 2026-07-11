@@ -1,13 +1,17 @@
 ---
 name: pylontech-analysis
-description: Perform health and anomaly analysis on Pylontech battery stacks (e.g., US3000C) using serial console logs and Prometheus/Grafana metrics gathered via exporter and retrieved via Grafana MCP server.
+description: Perform health and anomaly analysis on Pylontech LiFePo4 battery stacks (e.g., US3000C) using the local Pylontech MCP server, serial console log files, and Prometheus/Grafana metrics retrieved via Grafana MCP server.
 ---
 
 # Pylontech Battery Stack Analysis Skill
 
-This skill analyzes Pylontech lithium battery stack telemetry using a combination of serial console log dumps and historical time-series metrics collected via a Prometheus exporter (e.g., homeassistant or custom battery exporter) and queried via the Grafana MCP server.
+This skill analyzes Pylontech LiFePo4 (Lithium Iron Phosphate) battery stack telemetry using:
+1. **Live diagnostics** queried directly from the battery console via the local **Pylontech MCP Server** (exposing tools like `raw_command` and `get_pwr_status`).
+2. **Historical trends** collected via Prometheus exporter and retrieved via the **Grafana MCP Server**.
+3. **Static log files** or raw serial console log dumps.
 
 Use this skill when:
+- Querying live metrics or logs directly from the Pylontech battery stack using the Pylontech MCP server.
 - Analyzing serial console log outputs.
 - Querying Prometheus/Grafana datasets for historical trends.
 
