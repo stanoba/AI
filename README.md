@@ -4,10 +4,11 @@ Welcome to my AI repository. This is a central storage location where I save all
 
 ## Repository Structure
 
-- **`skills/`**: Contains custom skills that extend AI agents' capabilities.
-  - **`skills/pylontech_data_analysis/`**: A skill for analyzing Pylontech battery stack diagnostics (e.g., US3000C) using serial console logs and Prometheus/Grafana metrics.
-- **MCP Server Configurations**: Guides, config snippets, and README files detailing how to connect external data sources (like Grafana/Prometheus) to AI agents (Codex, Google Antigravity, etc.).
+- **`skills/`**: Custom instruction packages (skills) that extend AI agents' capabilities.
+  - **[skills/pylontech_data_analysis/](skills/pylontech_data_analysis/README.md)**: A skill detailing health and thermal correlation rules for Pylontech batteries.
+- **`mcp-servers/`**: Model Context Protocol (MCP) server implementations.
+  - **[mcp-servers/pylontech-mcp/](mcp-servers/pylontech-mcp/README.md)**: Python-based FastMCP console server for direct battery stack query logging.
 
 ## Purpose
 
-The goal of this repository is to act as a structured, version-controlled notebook and toolbox for AI-assisted engineering and pair-programming tasks.
+This repository serves as a version-controlled workspace for local AI configuration setups, battery diagnostics telemetry schemas, and automation scripts.

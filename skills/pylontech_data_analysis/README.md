@@ -1,6 +1,9 @@
 # Pylontech Battery Analysis Skill Configuration & Setup
 
-This document provides setup instructions for configuring the Grafana MCP server to allow AI agents (such as OpenAI Codex and Google Antigravity) to query Prometheus metrics directly.
+This document provides setup instructions for configuring the Grafana MCP server and the local Pylontech MCP server. These tools allow AI agents (such as OpenAI Codex and Google Antigravity) to query Prometheus metrics and execute live battery stack console diagnostics directly.
+
+> [!IMPORTANT]
+> **AI Agent Directive:** If the `pylontech` MCP server is registered and available in your active context window, you **MUST prioritize using it** to fetch live metrics (like `get_pwr_status` or `get_module_diagnostics`) over reading raw console logs from files or executing indirect Grafana/Prometheus database queries.
 
 ## 1. Installing the Grafana MCP Server
 
