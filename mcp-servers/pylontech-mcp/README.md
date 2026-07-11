@@ -2,7 +2,7 @@
 
 A Model Context Protocol (MCP) server written in Python that allows AI agents to directly communicate with a Pylontech battery stack (e.g. US3000C) over:
 - A local serial cable (RS232/RS485 console cable connected to a PC COM/USB port).
-- A network-attached serial terminal server (e.g. using raw TCP/Telnet on port 23, replacing manual `nc` commands).
+- A network-attached serial terminal server/Wi-Fi bridge (e.g. running the open-source **[esp-link](https://github.com/jeelabs/esp-link)** firmware on an ESP8266, using raw TCP/Telnet on port 23/2323, replacing manual `nc` commands).
 
 ---
 
@@ -63,6 +63,9 @@ $env:PYLONTECH_BAUD_OR_PORT="23"
 python pylontech_mcp.py
 ```
 
+> [!TIP]
+> **Wi-Fi Serial Bridge**: An excellent way to connect your battery stack over Wi-Fi is to use an ESP8266 board flashed with the open-source **[esp-link](https://github.com/jeelabs/esp-link)** firmware. Connecting the ESP8266 Rx/Tx pins (via an RS232 shifter) to the battery console allows `esp-link` to expose a transparent raw serial TCP port (typically on port `23` or `2323`), which this MCP server can connect to over the local network.
+
 #### Example: Direct USB Console Cable (Serial)
 ```bash
 # Windows
@@ -74,7 +77,37 @@ python pylontech_mcp.py
 
 ---
 
-## 4. MCP Tools Provided
+## 4. DIY RJ45 Console Communication Cable Guide
+
+The console port on Pylontech battery stacks (e.g. US2000C, US3000C, US5000C) uses an RJ45 socket operating at **RS232 voltage levels** (not TTL). If you want to connect a PC directly to the battery console using a standard USB-to-RS232 serial cable (with DB9 connector or wire ends), you can build a custom cable using a standard Ethernet patch cord.
+
+### Wiring Specification (Pinout Mapping)
+
+| RJ45 Pin | T568B Color | T568A Color | Function | Connect to USB-RS232 (DB9 Female) |
+|:---:|:---|:---|:---|:---|
+| **Pin 3** | White/Green | White/Orange | Pylontech TX (Output) | **Pin 2 (RxD)** |
+| **Pin 6** | Green | Orange | Pylontech RX (Input) | **Pin 3 (TxD)** |
+| **Pin 8** | Brown | Brown | Ground (GND) | **Pin 5 (GND)** |
+
+> [!WARNING]
+> Do NOT connect the Pylontech RJ45 console port directly to standard 3.3V/5V microcontroller TTL pins (like an ESP32 or Arduino RX/TX) without an RS232-to-TTL transceiver (like a MAX232 chip), as the RS232 voltage levels can damage them. If you are using a standard USB-to-RS232 converter cable, it already includes the transceiver, making direct connection safe.
+
+### DIY Assembly Instructions
+
+1. Take a standard Ethernet patch cable and cut off one end.
+2. Strip the outer insulation of the cut end to expose the inner twisted pairs.
+3. Identify the **Pin 3** (White/Green for T568B), **Pin 6** (Green), and **Pin 8** (Brown) wires.
+4. Solder or connect these wires to the corresponding pins of your USB-RS232 adapter:
+   * Connect **RJ45 Pin 3** to the adapter's **RxD** (Receive wire / DB9 Pin 2).
+   * Connect **RJ45 Pin 6** to the adapter's **TxD** (Transmit wire / DB9 Pin 3).
+   * Connect **RJ45 Pin 8** to the adapter's **GND** (Ground wire / DB9 Pin 5).
+5. Trim and insulate any remaining unused wires to avoid short circuits.
+6. Plug the remaining RJ45 plug into the battery's **Console** port (labeled **Console**, not CAN or RS485).
+7. Connect the USB adapter to your host machine running the MCP server.
+
+---
+
+## 5. MCP Tools Provided
 
 Once registered with your AI assistant, the server exposes the following tools:
 
@@ -84,7 +117,7 @@ Once registered with your AI assistant, the server exposes the following tools:
 
 ---
 
-## 5. Security & Safety Whitelist & Command Syntax
+## 6. Security & Safety Whitelist & Command Syntax
 
 To prevent accidental stack shutdowns, resets, or configuration modifications, the server blocks all destructive or administrative commands. Only the following safe, read-only query commands are permitted by the `raw_command` tool:
 
@@ -117,7 +150,7 @@ Any other command (e.g. `shut`, `trst`, `updata`, `login`) is rejected before ex
 
 ---
 
-## 6. Features & Reliability
+## 7. Features & Reliability
 
 * **Automatic JSON Serialization**: Telemetry values are parsed into numeric formats. Decorative terminal lines and trailing space paddings are stripped out. Values containing physics units (e.g. `mV`, `mA`, `%`, `mC`, `mAH`, `s`) are converted to standard integers/floats.
 * **Auto-Paging Handler**: The server automatically detects the console paging prompt (`Press [Enter] to be continued,other key to exit`) and sends a carriage return (`\r`) in the background to stitch together multi-page records (crucial for long `datalist` history outputs).
@@ -125,7 +158,7 @@ Any other command (e.g. `shut`, `trst`, `updata`, `login`) is rejected before ex
 
 ---
 
-## 7. AI Agent Configuration Examples
+## 8. AI Agent Configuration Examples
 
 To use this local MCP server with your AI agents, add the following configuration to their respective settings files.
 
@@ -191,7 +224,7 @@ File path: `C:\Users\<user>\.gemini\config\mcp_config.json`
 
 ---
 
-## 8. Example AI Agent Prompts
+## 9. Example AI Agent Prompts
 
 You can use standard natural language to prompt your AI agent to query the battery stack. Here are some examples:
 
@@ -216,7 +249,7 @@ You can use standard natural language to prompt your AI agent to query the batte
 
 ---
 
-## 9. Disclaimer & Limitation of Liability
+## 10. Disclaimer & Limitation of Liability
 
 > [!CAUTION]
 > **USE AT YOUR OWN RISK.** This software is provided "as is" without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and non-infringement.
