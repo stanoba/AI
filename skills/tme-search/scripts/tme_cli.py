@@ -312,6 +312,53 @@ def favorite_list(output_json: bool = False):
             print(f"| `{r['symbol']}` | {r['role']} | **{r['stock']:,}** | {price_str} | {status_str} |")
         print("\n")
 
+def fetch_shared_favorite_list(url_or_hash: str, output_json: bool = False):
+    import re
+    hash_match = re.search(r"([a-fA-F0-9]{40})", url_or_hash)
+    if not hash_match:
+        print("Invalid TME shared favorite URL or hash.")
+        return
+    token = hash_match.group(1)
+    
+    endpoint_url = f"https://www.tme.eu/ajax/common/new-favourites/{token}"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    }
+    
+    try:
+        res = requests.get(endpoint_url, headers=headers, timeout=10)
+        if res.status_code != 200:
+            print(f"Error fetching shared list (HTTP {res.status_code})")
+            return
+        data = res.json()
+    except Exception as e:
+        print(f"Failed to retrieve shared list: {e}")
+        return
+
+    name = data.get("name", "Shared Favorites List")
+    elements = data.get("elements", [])
+    
+    results = []
+    for elem in elements:
+        sym = elem.get("symbol")
+        mfr = elem.get("manufacturer", {}).get("name", "")
+        desc = elem.get("description", "")
+        results.append({
+            "symbol": sym,
+            "manufacturer": mfr,
+            "description": desc
+        })
+        
+    if output_json:
+        print(json.dumps({"status": "OK", "name": name, "token": token, "items": results}, indent=2, ensure_ascii=False))
+    else:
+        print(f"\n### TME Shared Favorites List: '{name}'\n")
+        print("| Symbol | Manufacturer | Description |")
+        print("| :--- | :--- | :--- |")
+        for r in results:
+            print(f"| `{r['symbol']}` | {r['manufacturer']} | {r['description']} |")
+        print("\n")
+
 def main():
     parser = argparse.ArgumentParser(description="TME.eu Component Search & Stock Checker CLI")
     parser.add_argument("--json", action="store_true", help="Output raw JSON data instead of formatted Markdown")
@@ -339,6 +386,10 @@ def main():
     fav_list = fav_sub.add_parser("list")
     fav_list.add_argument("--json", action="store_true", help="Output raw JSON")
     
+    fav_import = fav_sub.add_parser("import", help="Fetch items from a public shared TME favorites URL or hash token")
+    fav_import.add_argument("url_or_hash", type=str, help="Shared TME favorite list URL or token hash")
+    fav_import.add_argument("--json", action="store_true", help="Output raw JSON")
+    
     args = parser.parse_args()
     
     output_json = getattr(args, "json", False)
@@ -350,6 +401,8 @@ def main():
     elif args.command == "favorite":
         if args.fav_action == "add":
             favorite_add(args.symbol, args.role)
+        elif args.fav_action == "import":
+            fetch_shared_favorite_list(args.url_or_hash, output_json=output_json)
         else:
             favorite_list(output_json=output_json)
     else:

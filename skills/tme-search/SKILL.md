@@ -35,6 +35,10 @@ Add components to the local project parts list (`tme_favorites.json`) and check 
   ```bash
   python .agents/skills/tme-search/scripts/tme_cli.py favorite list
   ```
+- **Fetch Public Shared Webshop List**:
+  ```bash
+  python .agents/skills/tme-search/scripts/tme_cli.py favorite import <SHARED_URL_OR_HASH>
+  ```
 
 ---
 
