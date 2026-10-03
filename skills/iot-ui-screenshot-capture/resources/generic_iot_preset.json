@@ -1,0 +1,36 @@
+{
+  "name": "Generic IoT Device Preset",
+  "primary_ip": "192.168.1.50",
+  "proxy_port": 8765,
+  "output_dir": "docs/assets",
+  "virtual_time_budget_ms": 1500,
+  "default_width": 1280,
+  "anonymize": true,
+  "mock_chart": false,
+  "replacements": [
+    ["192.168.1.50", "192.168.1.100"],
+    ["192.168.1.1", "192.168.1.1"],
+    ["MyPrivateSSID", "Home-WiFi"],
+    ["AA:BB:CC:DD:EE:FF", "11:22:33:44:55:66"]
+  ],
+  "captures": [
+    {
+      "filename": "dashboard-light.png",
+      "path": "/?theme=light",
+      "width": 1280,
+      "height": 1800
+    },
+    {
+      "filename": "dashboard-dark.png",
+      "path": "/?theme=dark",
+      "width": 1280,
+      "height": 1800
+    },
+    {
+      "filename": "settings.png",
+      "path": "/settings",
+      "width": 1280,
+      "height": 1600
+    }
+  ]
+}

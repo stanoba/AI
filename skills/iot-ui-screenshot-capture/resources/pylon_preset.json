@@ -1,0 +1,79 @@
+{
+  "name": "Pylontech Smart Monitor & Emulator Preset",
+  "primary_ip": "192.168.1.150",
+  "secondary_ip": "192.168.1.153",
+  "proxy_port": 8765,
+  "output_dir": "assets",
+  "virtual_time_budget_ms": 2000,
+  "default_width": 1280,
+  "anonymize": true,
+  "mock_chart": true,
+  "replacements": [
+    ["N/A (Normal)", "N/A"],
+    ["7.67s (FAIL)", "0.85s (OK)"],
+    ["color:#ef4444;\">(FAIL)", "color:#22c55e;\">(OK)"],
+    ["(FAIL)", "(OK)"]
+  ],
+  "captures": [
+    {
+      "filename": "ui-dashboard.png",
+      "path": "/?dev=smart&theme=light",
+      "width": 1280,
+      "height": 2400
+    },
+    {
+      "filename": "ui-dashboard-dark.png",
+      "path": "/?dev=smart&theme=dark",
+      "width": 1280,
+      "height": 2400
+    },
+    {
+      "filename": "ui-module-detail.png",
+      "path": "/module?m=1&dev=smart&theme=light",
+      "width": 1280,
+      "height": 1900
+    },
+    {
+      "filename": "ui-module-detail-dark.png",
+      "path": "/module?m=1&dev=smart&theme=dark",
+      "width": 1280,
+      "height": 1900
+    },
+    {
+      "filename": "ui-settings.png",
+      "path": "/settings?dev=smart&theme=light",
+      "width": 1280,
+      "height": 1900
+    },
+    {
+      "filename": "ui-settings-dark.png",
+      "path": "/settings?dev=smart&theme=dark",
+      "width": 1280,
+      "height": 1900
+    },
+    {
+      "filename": "ui-console-log.png",
+      "path": "/log?dev=smart&theme=light",
+      "width": 1280,
+      "height": 1300
+    },
+    {
+      "filename": "ui-console-log-dark.png",
+      "path": "/log?dev=smart&theme=dark",
+      "width": 1280,
+      "height": 1300
+    },
+    {
+      "filename": "ui-emulator-dashboard.png",
+      "path": "/?dev=emulator&theme=light",
+      "width": 1280,
+      "height": 2400
+    },
+    {
+      "filename": "ui-emulator-dashboard-dark.png",
+      "path": "/?dev=emulator&theme=dark",
+      "width": 1280,
+      "height": 2400
+    }
+  ]
+}
